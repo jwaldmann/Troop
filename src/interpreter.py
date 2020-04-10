@@ -14,6 +14,9 @@ from subprocess import Popen
 from subprocess import PIPE, STDOUT
 from datetime import datetime
 
+import subprocess
+import os
+
 # Import OSC library depending on Python version
 
 if PY_VERSION == 2:
@@ -390,7 +393,10 @@ class TidalInterpreter(BuiltinInterpreter):
 
         try:
 
-            process = Popen(["ghc-pkg", "field", "tidal", "data-dir"], stdout=PIPE, universal_newlines=True)
+
+            ghc_numver = 'ghc-' + subprocess.run(['ghc', '--numeric-version'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+            pack_db = os.environ["HOME"] + "/.cabal/store/" + ghc_numver + "/package.db"
+            process = Popen(["ghc-pkg", "field", "-f", pack_db, "tidal", "data-dir"], stdout=PIPE, universal_newlines=True)
 
             output = process.communicate()[0]
 
